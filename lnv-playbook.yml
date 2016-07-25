@@ -1,0 +1,74 @@
+---
+- hosts: all
+  remote_user: root
+  vars:
+  tasks:
+  - name:  copy daemons file in /etc/quagga 
+    sudo:  yes
+    template:  src=./files/quagga.daemons_file dest=/etc/quagga/daemons
+
+  - name:  copy lnv-config-check.py in /home/vagrant 
+    sudo:  yes
+    template:  src=./files/lnv-config-check.py dest=/home/vagrant
+
+  - name:  change file permissions
+    sudo:  yes
+    file:  path=/home/vagrant/lnv-config-check.py state=touch mode=0755
+  
+  - name:  copy spine1 interfaces file 
+    sudo:  yes
+    template:  src=./files/spine1_interfaces dest=/etc/network/interfaces
+    when:  inventory_hostname == "spine1"
+
+  - name:  copy spine2 interfaces file        
+    sudo:  yes
+    template:  src=./files/spine2_interfaces dest=/etc/network/interfaces
+    when:  inventory_hostname == "spine2"
+
+  - name:  copy leaf1 interfaces file        
+    sudo:  yes
+    template:  src=./files/leaf1_interfaces dest=/etc/network/interfaces
+    when:  inventory_hostname == "leaf1"
+
+  - name:  copy leaf2 interfaces file        
+    sudo:  yes
+    template:  src=./files/leaf2_interfaces dest=/etc/network/interfaces
+    when:  inventory_hostname == "leaf2"
+
+  - name:  copy spine1 Quagga file 
+    sudo:  yes
+    template:  src=./files/spine1_quagga.conf dest=/etc/quagga/Quagga.conf
+    when:  inventory_hostname == "spine1"
+
+  - name:  copy spine2 Quagga file   
+    sudo:  yes
+    template:  src=./files/spine2_quagga.conf dest=/etc/quagga/Quagga.conf
+    when:  inventory_hostname == "spine2"
+
+  - name:  copy leaf1 Quagga file   
+    sudo:  yes
+    template:  src=./files/leaf1_quagga.conf dest=/etc/quagga/Quagga.conf
+    when:  inventory_hostname == "leaf1"
+
+  - name:  copy leaf2 Quagga file   
+    sudo:  yes
+    template:  src=./files/leaf2_quagga.conf dest=/etc/quagga/Quagga.conf
+    when:  inventory_hostname == "leaf2"
+
+  - name:  copy spine1 vxsnd.conf (service node configuration)
+    sudo:  yes
+    template:  src=./files/spine1_vxsnd.conf dest=/etc/vxsnd.conf
+    when:  inventory_hostname == "spine1"
+
+  - name:  copy spine2 vxsnd.conf (service node configuration)
+    sudo:  yes
+    template:  src=./files/spine2_vxsnd.conf dest=/etc/vxsnd.conf
+    when:  inventory_hostname == "spine2"
+
+  - name:  Reload interfaces file
+    sudo:  yes
+    command: /sbin/ifreload -a 
+
+  - name:  restart Quagga
+    sudo:  yes
+    command: /usr/sbin/service quagga restart 
