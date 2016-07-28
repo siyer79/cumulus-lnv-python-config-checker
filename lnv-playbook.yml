@@ -72,3 +72,15 @@
   - name:  restart Quagga
     sudo:  yes
     command: /usr/sbin/service quagga restart 
+
+  - name:  copy python behave tar file
+    sudo:  yes
+    copy:  src=./files/behave.tar dest=/home/vagrant owner=root mode=0777
+
+  - name:  extract behave 
+    sudo:  yes
+    command: /bin/tar xvf /home/vagrant/behave.tar
+
+  - name:  install behave
+    sudo:  yes
+    command: /usr/bin/python /home/vagrant/behave/setup.py install 
