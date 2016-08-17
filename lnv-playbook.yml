@@ -65,6 +65,16 @@
     template:  src=./files/spine2_vxsnd.conf dest=/etc/vxsnd.conf
     when:  inventory_hostname == "spine2"
 
+  - name:  Start vxsnd on spines
+    sudo:  yes
+    command: systemctl restart vxsnd.service 
+    when:  inventory_hostname == "spine1" or "spine2"
+
+  - name:  Start vxrnd 
+    sudo:  yes
+    command: systemctl restart vxrd.service 
+    when:  inventory_hostname == "leaf1" or "leaf2"
+
   - name:  Reload interfaces file
     sudo:  yes
     command: /sbin/ifreload -a 
@@ -84,3 +94,8 @@
   - name:  install behave
     sudo:  yes
     command: /usr/bin/python /home/vagrant/behave/setup.py install 
+
+  - name:  Create directories 
+    sudo:  yes
+    command: /bin/mkdir -p /home/vagrant/features/steps
+
